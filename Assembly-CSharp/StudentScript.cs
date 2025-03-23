@@ -16577,7 +16577,7 @@ public class StudentScript : MonoBehaviour
 					EndAlarm();
 				}
 			}
-			else if (AlarmTimer > 1f && !Reacted)
+			else if (!Reacted)			# If ((AlarmTimer == 5f) & (!Reacted))
 			{
 				if (Teacher)
 				{
@@ -17257,7 +17257,7 @@ public class StudentScript : MonoBehaviour
 				}
 				Reacted = true;
 			}
-			if (((Club == ClubType.Council && !DoNotShove) || Shovey) && DistanceToPlayer < 1.1f && !Yandere.Invisible && !EatingSnack && (Yandere.Armed || (Yandere.Carrying && !Yandere.CurrentRagdoll.Concealed) || (Yandere.Dragging && !Yandere.CurrentRagdoll.Concealed)) && Prompt.InSight)
+			if (((Club == ClubType.Council && !DoNotShove) || Shovey) && DistanceToPlayer < 1.1f && !Yandere.Invisible && !EatingSnack && (Yandere.Armed || ((Yandere.Carrying || Yandere.Dragging) && !Yandere.CurrentRagdoll.Concealed) && Prompt.InSight)
 			{
 				if (Yandere.Armed && !Yandere.EquippedWeapon.Suspicious && !WitnessedMurder && !WitnessedCorpse && !Yandere.Chased && Yandere.Chasers == 0)
 				{
@@ -17387,13 +17387,8 @@ public class StudentScript : MonoBehaviour
 						{
 							StopInvestigating();
 						}
-						FocusOnStudent = false;
-						FocusOnYandere = false;
-						Distracted = false;
-						Threatened = false;
-						Alarmed = false;
+						FocusOnStudent = FocusOnYandere = Distracted = Threatened = Alarmed = NoTalk = false;
 						Routine = true;
-						NoTalk = false;
 						IgnoreTimer = 5f;
 						AlarmTimer = 0f;
 					}
@@ -17435,7 +17430,7 @@ public class StudentScript : MonoBehaviour
 					{
 						CharacterAnimation.CrossFade("delinquentCombatIdle_00");
 					}
-					if ((Yandere.Carrying && !Yandere.CurrentRagdoll.Concealed) || (Yandere.Dragging && !Yandere.CurrentRagdoll.Concealed))
+					if (((Yandere.Carrying || Yandere.Dragging) && !Yandere.CurrentRagdoll.Concealed))
 					{
 						Yandere.EmptyHands();
 					}
@@ -17457,29 +17452,28 @@ public class StudentScript : MonoBehaviour
 						Yandere.EmptyHands();
 					}
 					Yandere.DelinquentFighting = true;
-					Yandere.NearSenpai = false;
-					Yandere.Degloving = false;
-					Yandere.CanMove = false;
+					Yandere.NearSenpai = Yandere.Degloving = Yandere.CanMove = FocusOnStudent = FocusOnYandere = false;
 					Yandere.GloveTimer = 0f;
-					FocusOnStudent = false;
-					FocusOnYandere = false;
-					Distracted = true;
-					Fighting = true;
+					Distracted = Fighting = true;
 					ThreatTimer = 0f;
 					StudentManager.CombatMinigame.Delinquent = this;
 					StudentManager.CombatMinigame.enabled = true;
 					StudentManager.CombatMinigame.StartCombat();
 					SpeechLines.Stop();
 					SpawnAlarmDisc();
-					if (WitnessedMurder || WitnessedCorpse)
+					if (WitnessedMurder || WitnessedCorpse || (!StudentManager.CombatMinigame.Practice))
 					{
 						Subtitle.Speaker = this;
-						Subtitle.UpdateLabel(SubtitleType.DelinquentAvenge, 0, 5f);
-					}
-					else if (!StudentManager.CombatMinigame.Practice)
-					{
-						Subtitle.Speaker = this;
-						Subtitle.UpdateLabel(SubtitleType.DelinquentFight, 0, 5f);
+
+						if (WitnessedMurder || WitnessedCorpse)	
+						{
+							Subtitle.UpdateLabel(SubtitleType.DelinquentAvenge, 0, 5f);
+						}
+					
+						else		# When (!StudentManager.CombatMinigame.Practice)
+						{
+							Subtitle.UpdateLabel(SubtitleType.DelinquentFight, 0, 5f);
+						}
 					}
 				}
 				Debug.Log("Yandere is turning to face Pursuer.");
@@ -17492,9 +17486,7 @@ public class StudentScript : MonoBehaviour
 				}
 				if (CharacterAnimation[text + "delinquentDrawWeapon_00"].time >= CharacterAnimation[text + "delinquentDrawWeapon_00"].length)
 				{
-					Threatened = false;
-					Alarmed = false;
-					base.enabled = false;
+					Threatened = Alarmed = base.enabled = false;
 				}
 				return;
 			}
@@ -17505,11 +17497,8 @@ public class StudentScript : MonoBehaviour
 				{
 					StopInvestigating();
 				}
-				Distracted = false;
-				Threatened = false;
-				Alarmed = false;
+				Distracted = Threatened = Alarmed = Notalk = false;
 				Routine = true;
-				NoTalk = false;
 				IgnoreTimer = 5f;
 				AlarmTimer = 0f;
 			}
@@ -17525,15 +17514,12 @@ public class StudentScript : MonoBehaviour
 		{
 			if (!WitnessedMurder && !WitnessedCorpse)
 			{
-				Distracted = false;
-				Threatened = false;
+				Distracted = Threatened = false;
 				EndAlarm();
 			}
 			else
 			{
-				Threatened = false;
-				Alarmed = false;
-				Injured = false;
+				Threatened = Alarmed = Injured = false;
 				PersonaReaction();
 			}
 		}
@@ -17608,31 +17594,25 @@ public class StudentScript : MonoBehaviour
 		}
 		if (LightSwitch == null)
 		{
+			int newParam = 2
 			if (Gas)
 			{
-				Subtitle.Speaker = this;
-				Subtitle.UpdateLabel(SplashSubtitleType, 6, 5f);
+				newParam = 6
 			}
 			else if (Bloody)
 			{
-				Subtitle.Speaker = this;
-				Subtitle.UpdateLabel(SplashSubtitleType, 4, 5f);
+				newParam = 4
 			}
-			else
-			{
-				Subtitle.Speaker = this;
-				Subtitle.UpdateLabel(SplashSubtitleType, 2, 5f);
-			}
+			Subtitle.Speaker = this;
+			Subtitle.UpdateLabel(SplashSubtitleType, newParam, 5f);
 			SplashPhase++;
 			if (!Male)
 			{
-				CurrentDestination = StudentManager.StrippingPositions[GirlID];
-				Pathfinding.target = StudentManager.StrippingPositions[GirlID];
+				CurrentDestination = Pathfinding.target = StudentManager.StrippingPositions[GirlID];
 			}
 			else
 			{
-				CurrentDestination = StudentManager.MaleStripSpot;
-				Pathfinding.target = StudentManager.MaleStripSpot;
+				CurrentDestination = Pathfinding.target = StudentManager.MaleStripSpot;
 			}
 		}
 		else if (!LightSwitch.BathroomLight.activeInHierarchy)
@@ -17645,24 +17625,23 @@ public class StudentScript : MonoBehaviour
 				Prompt.enabled = false;
 			}
 			Subtitle.UpdateLabel(SubtitleType.LightSwitchReaction, 1, 5f);
-			CurrentDestination = LightSwitch.ElectrocutionSpot;
-			Pathfinding.target = LightSwitch.ElectrocutionSpot;
+			CurrentDestination = Pathfinding.target = LightSwitch.ElectrocutionSpot;
 			Pathfinding.speed = WalkSpeed;
 			BathePhase = -1;
 			InDarkness = true;
 		}
 		else
 		{
+			newParam = 4
+				
 			if (!Bloody)
 			{
-				Subtitle.Speaker = this;
-				Subtitle.UpdateLabel(SplashSubtitleType, 2, 5f);
+				newParam = 2
 			}
-			else
-			{
-				Subtitle.Speaker = this;
-				Subtitle.UpdateLabel(SplashSubtitleType, 4, 5f);
-			}
+			
+			Subtitle.Speaker = this;
+			Subtitle.UpdateLabel(SplashSubtitleType, 4, 5f);
+			
 			SplashPhase++;
 			CurrentDestination = StudentManager.StrippingPositions[GirlID];
 			Pathfinding.target = StudentManager.StrippingPositions[GirlID];
@@ -17743,10 +17722,8 @@ public class StudentScript : MonoBehaviour
 					{
 						SmartPhone.SetActive(value: true);
 					}
-					CurrentDestination = Destinations[Phase];
-					Pathfinding.target = Destinations[Phase];
-					Pathfinding.canSearch = true;
-					Pathfinding.canMove = true;
+					CurrentDestination = Pathfinding.target = Destinations[Phase];
+					Pathfinding.canSearch = Pathfinding.canMove = true;
 					ForgetRadio();
 				}
 				else if (RadioTimer > 2f)
@@ -17765,8 +17742,7 @@ public class StudentScript : MonoBehaviour
 			if (RadioPhase < 100)
 			{
 				CharacterAnimation.CrossFade(IdleAnim);
-				Pathfinding.canSearch = false;
-				Pathfinding.canMove = false;
+				Pathfinding.canSearch = Pathfinding.canMove = false;
 				RadioPhase = 100;
 				RadioTimer = 0f;
 			}
@@ -17774,10 +17750,8 @@ public class StudentScript : MonoBehaviour
 			RadioTimer += Time.deltaTime;
 			if (RadioTimer > 1f || Radio.transform.parent != null)
 			{
-				CurrentDestination = Destinations[Phase];
-				Pathfinding.target = Destinations[Phase];
-				Pathfinding.canSearch = true;
-				Pathfinding.canMove = true;
+				CurrentDestination = Pathfinding.target = Destinations[Phase];
+				Pathfinding.canSearch = Pathfinding.canMove = true;
 				ForgetRadio();
 			}
 		}
@@ -17824,13 +17798,9 @@ public class StudentScript : MonoBehaviour
 		{
 			if (StudentManager.KokonaTutorial)
 			{
-				if (CharacterAnimation[VomitAnim].time > 13f)
+				if ((CharacterAnimation[VomitAnim].time > 13f) || (CharacterAnimation[VomitAnim].time < 1f))
 				{
 					CharacterAnimation[VomitAnim].speed = -1f;
-				}
-				else if (CharacterAnimation[VomitAnim].time < 1f)
-				{
-					CharacterAnimation[VomitAnim].speed = 1f;
 				}
 			}
 			else if (CharacterAnimation[VomitAnim].time > 13f)
@@ -17850,22 +17820,18 @@ public class StudentScript : MonoBehaviour
 				if (Male)
 				{
 					StudentManager.GetMaleWashSpot(this);
-					Pathfinding.target = StudentManager.MaleWashSpot;
-					CurrentDestination = StudentManager.MaleWashSpot;
+					Pathfinding.target = CurrentDestination = StudentManager.MaleWashSpot;
 				}
 				else
 				{
 					StudentManager.GetFemaleWashSpot(this);
-					Pathfinding.target = StudentManager.FemaleWashSpot;
-					CurrentDestination = StudentManager.FemaleWashSpot;
+					Pathfinding.target = CurrentDestination = StudentManager.FemaleWashSpot;
 				}
 				if (VomitDoor != null)
 				{
-					VomitDoor.Prompt.enabled = true;
-					VomitDoor.enabled = true;
+					VomitDoor.Prompt.enabled = VomitDoor.enabled = true;
 				}
-				Pathfinding.canSearch = true;
-				Pathfinding.canMove = true;
+				Pathfinding.canSearch = Pathfinding.canMove = true;
 				Pathfinding.speed = WalkSpeed;
 				DistanceToDestination = 100f;
 				VomitPhase++;
@@ -17876,8 +17842,7 @@ public class StudentScript : MonoBehaviour
 			if (DistanceToDestination < 0.5f)
 			{
 				CharacterAnimation.CrossFade(WashFaceAnim);
-				Pathfinding.canSearch = false;
-				Pathfinding.canMove = false;
+				Pathfinding.canSearch = Pathfinding.canMove = false;
 				VomitPhase++;
 			}
 		}
@@ -17895,8 +17860,7 @@ public class StudentScript : MonoBehaviour
 			}
 			GetDestinations();
 			Phase++;
-			Pathfinding.target = Destinations[Phase];
-			CurrentDestination = Destinations[Phase];
+			Pathfinding.target = CurrentDestination = Destinations[Phase];
 			CurrentAction = StudentActionType.SitAndTakeNotes;
 			DistanceToDestination = 100f;
 		}
@@ -17907,14 +17871,9 @@ public class StudentScript : MonoBehaviour
 		CharacterAnimation.cullingType = AnimationCullingType.BasedOnRenderers;
 		VomitEmitter.gameObject.SetActive(value: false);
 		Prompt.Label[0].text = "     Talk";
-		Pathfinding.canSearch = true;
-		Pathfinding.canMove = true;
-		Distracted = false;
-		Drownable = false;
-		Vomiting = false;
-		Private = false;
-		CanTalk = true;
-		Routine = true;
+		Pathfinding.canSearch = Pathfinding.canMove = true;
+		Distracted = Drownable = Vomiting = Private = false;
+		CanTalk = Routine = true;
 		Emetic = false;
 		VomitPhase = 0;
 		StudentManager.UpdateMe(StudentID);
@@ -17940,8 +17899,7 @@ public class StudentScript : MonoBehaviour
 						CharacterAnimation.CrossFade("f02_insertNote_00");
 						Cosmetic.MyRenderer.materials[2].SetFloat("_BlendAmount", 1f);
 					}
-					Pathfinding.canSearch = false;
-					Pathfinding.canMove = false;
+					Pathfinding.canSearch = Pathfinding.canMove = false;
 					Note.SetActive(value: true);
 					ConfessPhase++;
 				}
@@ -17977,10 +17935,8 @@ public class StudentScript : MonoBehaviour
 				text2 = ((!Male) ? "f02_insertNote_00" : "insertNote_01");
 				if (CharacterAnimation[text2].time >= CharacterAnimation[text2].length)
 				{
-					CurrentDestination = StudentManager.RivalConfessionSpot;
-					Pathfinding.target = StudentManager.RivalConfessionSpot;
-					Pathfinding.canSearch = true;
-					Pathfinding.canMove = true;
+					CurrentDestination = Pathfinding.target = StudentManager.RivalConfessionSpot;
+					Pathfinding.canSearch = Pathfinding.canMove = true;
 					Pathfinding.speed = 4f;
 					StudentManager.LoveManager.LeftNote = true;
 					CharacterAnimation.CrossFade(SprintAnim);
@@ -17997,8 +17953,7 @@ public class StudentScript : MonoBehaviour
 						StudentManager.FollowPrimaryLookSecondary.gameObject.SetActive(value: true);
 					}
 					CharacterAnimation.CrossFade(IdleAnim);
-					Pathfinding.canSearch = false;
-					Pathfinding.canMove = false;
+					Pathfinding.canSearch = Pathfinding.canMove = false;
 					ConfessPhase++;
 				}
 			}
@@ -18033,10 +17988,8 @@ public class StudentScript : MonoBehaviour
 			if (CharacterAnimation[text3].time >= CharacterAnimation[text3].length)
 			{
 				Debug.Log("Sprinting to confession tree.");
-				CurrentDestination = StudentManager.SuitorConfessionSpot;
-				Pathfinding.target = StudentManager.SuitorConfessionSpot;
-				Pathfinding.canSearch = true;
-				Pathfinding.canMove = true;
+				CurrentDestination = Pathfinding.target = StudentManager.SuitorConfessionSpot;
+				Pathfinding.canSearch = Pathfinding.canMove = true;
 				Pathfinding.speed = 4f;
 				Note.SetActive(value: false);
 				CharacterAnimation.CrossFade(SprintAnim);
@@ -18055,8 +18008,7 @@ public class StudentScript : MonoBehaviour
 				{
 					CharacterAnimation.CrossFade("f02_nervousLeftRight_00");
 				}
-				Pathfinding.canSearch = false;
-				Pathfinding.canMove = false;
+				Pathfinding.canSearch = Pathfinding.canMove = false;
 				ConfessPhase++;
 			}
 		}
@@ -18121,8 +18073,7 @@ public class StudentScript : MonoBehaviour
 						Debug.Log(Name + " was alarmed because Yandere-chan was moving nearby.");
 						DistractionSpot = Yandere.transform.position;
 						Alarm = 200f;
-						TemporarilyBlind = true;
-						FocusOnYandere = true;
+						TemporarilyBlind = FocusOnYandere = true;
 						Routine = false;
 						Pathfinding.canSearch = false;
 						Pathfinding.canMove = false;
@@ -18966,12 +18917,7 @@ public class StudentScript : MonoBehaviour
 		RespectEarned = false;
 		if ((Fleeing && WitnessedBloodPool) || ReportPhase == 2)
 		{
-			WitnessedBloodyWeapon = false;
-			WitnessedBloodPool = false;
-			WitnessedSomething = false;
-			WitnessedWeapon = false;
-			WitnessedLimb = false;
-			Fleeing = false;
+			WitnessedBloodyWeapon = WitnessedBloodPool = WitnessedSomething = WitnessedWeapon = WitnessedLimb = Fleeing = false;
 			ReportPhase = 0;
 		}
 		CharacterAnimation[ScaredAnim].time = 0f;
@@ -18992,35 +18938,13 @@ public class StudentScript : MonoBehaviour
 		EmptyHands();
 		MurdersWitnessed++;
 		SpeechLines.Stop();
-		WitnessedBloodyWeapon = false;
-		WitnessedBloodPool = false;
-		WitnessedSomething = false;
-		WitnessedWeapon = false;
-		WitnessedLimb = false;
+		WitnessedBloodyWeapon = WitnessedBloodPool = WitnessedSomething = WitnessedWeapon = WitnessedLimb = false;
 		if (ReturningMisplacedWeapon)
 		{
 			DropMisplacedWeapon();
 		}
-		SpecialRivalDeathReaction = false;
-		SenpaiWitnessingRivalDie = false;
-		ReturningMisplacedWeapon = false;
-		InvestigatingBloodPool = false;
-		CameraReacting = false;
-		FocusOnStudent = false;
-		FocusOnYandere = false;
-		TakingOutTrash = false;
-		WitnessedMurder = true;
-		Investigating = false;
-		Distracting = false;
-		EatingSnack = false;
-		Threatened = false;
-		Distracted = false;
-		Reacted = false;
-		Routine = false;
-		Alarmed = true;
-		NoTalk = false;
-		Shy = false;
-		Wet = false;
+		SpecialRivalDeathReaction = SenpaiWitnessingRivalDie = ReturningMisplacedWeapon = InvestigatingBloodPool = CameraReacting = FocusOnStudent = FocusOnYandere = TakingOutTrash = Investigating = Distracting = EatingSnack = Threatened = Distracted = Reacted = Routine = NoTalk = Shy = Wet = false;
+		WitnessedMurder = Alarmed = true;
 		if (OriginalPersona != PersonaType.Violent && Persona != OriginalPersona)
 		{
 			Debug.Log(Name + " is reverting back into their original Persona: " + OriginalPersona);
@@ -19144,13 +19068,8 @@ public class StudentScript : MonoBehaviour
 			{
 				DialogueWheel.End();
 				ParticleSystem.EmissionModule emission = Hearts.emission;
-				emission.enabled = false;
-				Pathfinding.canSearch = true;
-				Pathfinding.canMove = true;
-				Obstacle.enabled = false;
-				Talk.enabled = false;
-				Talking = false;
-				Waiting = false;
+				Pathfinding.canSearch = Pathfinding.canMove = true;
+				Obstacle.enabled = Talk.enabled = Talking = Waiting = emission.enabled = false;
 				StudentManager.EnablePrompts();
 			}
 			if (Prompt.Label[0] != null && !StudentManager.EmptyDemon)
@@ -19175,8 +19094,7 @@ public class StudentScript : MonoBehaviour
 			Yandere.Followers--;
 			Following = false;
 		}
-		Pathfinding.canSearch = false;
-		Pathfinding.canMove = false;
+		Pathfinding.canSearch = Pathfinding.canMove = false;
 		if (!Phoneless && (Persona == PersonaType.PhoneAddict || Sleuthing))
 		{
 			SmartPhone.SetActive(value: true);
@@ -19206,8 +19124,7 @@ public class StudentScript : MonoBehaviour
 		StopPairing();
 		if (Persona != PersonaType.Heroic)
 		{
-			AlarmTimer = 0f;
-			Alarm = 0f;
+			AlarmTimer = Alarm = 0f;
 		}
 		if (Teacher && Struggling)
 		{
@@ -19282,8 +19199,7 @@ public class StudentScript : MonoBehaviour
 			return;
 		}
 		Debug.Log(Name + " has begun to chase Yandere-chan.");
-		CurrentDestination = Yandere.transform;
-		Pathfinding.target = Yandere.transform;
+		CurrentDestination = Pathfinding.target = Yandere.transform;
 		Pathfinding.speed = 5f;
 		if (Yandere.Pursuer == null)
 		{
@@ -19406,33 +19322,33 @@ public class StudentScript : MonoBehaviour
 			StudentToMourn = Corpse.Student;
 			LovestruckTarget = PartnerID;
 		}
-		if (Persona == PersonaType.Loner || Persona == PersonaType.Spiteful)
+		if (Persona == (PersonaType.Loner || PersonaType.Spiteful))
 		{
 			Debug.Log(Name + " is looking in the Loner/Spiteful section of PersonaReaction() to decide what to do next.");
 			if (Club == ClubType.Delinquent)
 			{
 				Debug.Log("A delinquent turned into a loner, and now he is fleeing.");
+
+				var subtitleType = SubtitleType.DelinquentFlee;
+				
 				if (Injured && WitnessedMurder)
 				{
 					Debug.Log("You won't get away with what you've done!");
-					Subtitle.Speaker = this;
-					Subtitle.UpdateLabel(SubtitleType.DelinquentInjuredFlee, 1, 3f);
+					
+					subtitleType = SubtitleType.DelinquentInjuredFlee;
 				}
 				else if (FoundFriendCorpse)
 				{
-					Subtitle.Speaker = this;
-					Subtitle.UpdateLabel(SubtitleType.DelinquentFriendFlee, 1, 3f);
+					subtitleType = SubtitleType.DelinquentFriendFlee;
 				}
 				else if (FoundEnemyCorpse)
-				{
-					Subtitle.Speaker = this;
-					Subtitle.UpdateLabel(SubtitleType.DelinquentEnemyFlee, 1, 3f);
+				{	
+					subtitleType = SubtitleType.DelinquentEnemyFlee;
 				}
-				else
-				{
-					Subtitle.Speaker = this;
-					Subtitle.UpdateLabel(SubtitleType.DelinquentFlee, 1, 3f);
-				}
+
+				Subtitle.Speaker = this;
+				Subtitle.UpdateLabel(subtitleType, 1, 3f);
+				
 			}
 			else if (WitnessedMurder)
 			{
