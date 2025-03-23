@@ -2601,8 +2601,7 @@ public class StudentScript : MonoBehaviour
 					{
 						MustTrip = true;
 					}
-					RunAnim = "runFeminine_00";
-					SprintAnim = "runFeminine_00";
+					RunAnim = SprintAnim = "runFeminine_00";
 					RelaxAnim = "infirmaryRest_00";
 					OriginalSprintAnim = SprintAnim;
 					Cosmetic.Start();
@@ -2645,12 +2644,9 @@ public class StudentScript : MonoBehaviour
 					if (StudentManager.Students[11] != null && GameGlobals.GetRivalEliminations(1) != 6 && (float)StudentGlobals.GetStudentReputation(10) > -33.33333f && StudentGlobals.StudentSlave != 11 && !GameGlobals.AlphabetMode && !StudentManager.MissionMode)
 					{
 						StudentManager.Patrols.List[StudentID].parent = StudentManager.Students[11].transform;
-						StudentManager.Patrols.List[StudentID].localEulerAngles = new Vector3(0f, 0f, 0f);
-						StudentManager.Patrols.List[StudentID].localPosition = new Vector3(0f, 0f, 0f);
+						StudentManager.Patrols.List[StudentID].localEulerAngles = StudentManager.Patrols.List[StudentID].localPosition = new Vector3(0f, 0f, 0f);
 						VomitPhase = -1;
-						Indoors = true;
-						Spawned = true;
-						Calm = true;
+						Indoors = Spawned = Calm = true;
 						if (ShoeRemoval.Locker == null)
 						{
 							ShoeRemoval.Start();
@@ -2732,12 +2728,10 @@ public class StudentScript : MonoBehaviour
 					SmartPhone.GetComponent<Renderer>().material.mainTexture = OsanaPhoneTexture;
 					IdleAnim = "f02_tsunIdle_00";
 					WalkAnim = "f02_tsunWalk_00";
-					TaskAnims[0] = "f02_Task33_Line0";
-					TaskAnims[1] = "f02_Task33_Line1";
-					TaskAnims[2] = "f02_Task33_Line2";
-					TaskAnims[3] = "f02_Task33_Line3";
-					TaskAnims[4] = "f02_Task33_Line4";
-					TaskAnims[5] = "f02_Task33_Line5";
+     					for (int i = 0, i <= 5, i++)
+					{
+						TaskAnims[i] = $"f02_Task33_Line{i}"
+	  				}
 					LovestruckTarget = 1;
 					if (GameGlobals.RivalEliminationID == 4)
 					{
@@ -7530,12 +7524,8 @@ public class StudentScript : MonoBehaviour
 											Debug.Log("Setting ''SenpaiWitnessingRivalDie'' to true.");
 											StudentManager.Students[1].CharacterAnimation.cullingType = AnimationCullingType.AlwaysAnimate;
 											StudentManager.Students[1].CharacterAnimation.CrossFade("witnessPoisoning_00");
-											StudentManager.Students[1].CurrentDestination = StudentManager.LunchSpots.List[1];
-											StudentManager.Students[1].Pathfinding.target = StudentManager.LunchSpots.List[1];
-											StudentManager.Students[1].MyRenderer.updateWhenOffscreen = true;
-											StudentManager.Students[1].SenpaiWitnessingRivalDie = true;
-											StudentManager.Students[1].IgnoringPettyActions = true;
-											StudentManager.Students[1].Distracted = true;
+											StudentManager.Students[1].CurrentDestination = StudentManager.Students[1].Pathfinding.target = StudentManager.LunchSpots.List[1];
+											StudentManager.Students[1].MyRenderer.updateWhenOffscreen = StudentManager.Students[1].SenpaiWitnessingRivalDie = StudentManager.Students[1].IgnoringPettyActions = StudentManager.Students[1].Distracted = true;
 											StudentManager.Students[1].Routine = false;
 										}
 										if (!Distracted && CharacterAnimation[PoisonDeathAnim].time >= 2.5f)
@@ -7549,10 +7539,7 @@ public class StudentScript : MonoBehaviour
 											GameObjectUtils.SetLayerRecursively(base.gameObject, 11);
 											MapMarker.gameObject.layer = 10;
 											base.tag = "Blood";
-											Ragdoll.ChokingAnimation = true;
-											Ragdoll.Disturbing = true;
-											Ragdoll.Choking = true;
-											Dying = true;
+											Ragdoll.ChokingAnimation = Ragdoll.Disturbing = Ragdoll.Choking = Dying = true;
 											MurderSuicidePhase = 100;
 											SpawnAlarmDisc();
 											Debug.Log(Name + " just spawned an 'AlarmDisc'.");
@@ -7579,9 +7566,8 @@ public class StudentScript : MonoBehaviour
 											Debug.Log(Name + " is beginning to eat food that has been poisoned with a sedative.");
 											CharacterAnimation.cullingType = AnimationCullingType.AlwaysAnimate;
 											CharacterAnimation.CrossFade(HeadacheAnim);
-											Distracted = true;
+											Distracted = Private = true;
 											CanTalk = false;
-											Private = true;
 										}
 										if (CharacterAnimation[HeadacheAnim].time >= CharacterAnimation[HeadacheAnim].length)
 										{
@@ -7628,19 +7614,13 @@ public class StudentScript : MonoBehaviour
 										{
 											CharacterAnimation.CrossFade("f02_keepNote_00");
 										}
-										Pathfinding.canSearch = false;
-										Pathfinding.canMove = false;
 										Confessing = true;
-										CanTalk = false;
-										Routine = false;
+										Pathfinding.canSearch = Pathfinding.canMove = CanTalk = Routine = false;
 									}
 									else
 									{
 										SmartPhone.SetActive(value: false);
-										Pathfinding.canSearch = false;
-										Pathfinding.canMove = false;
-										CanTalk = false;
-										Routine = false;
+										Pathfinding.canSearch = Pathfinding.canMove = CanTalk = Routine = false;
 										if (!Confessing)
 										{
 											ShoeRemoval.enabled = true;
@@ -7656,8 +7636,7 @@ public class StudentScript : MonoBehaviour
 							else if (Actions[Phase] == StudentActionType.GradePapers)
 							{
 								CharacterAnimation.CrossFade("f02_deskWrite");
-								GradingPaper.Writing = true;
-								Obstacle.enabled = true;
+								GradingPaper.Writing = Obstacle.enabled = true;
 								Pen.SetActive(value: true);
 							}
 							else if (Actions[Phase] == StudentActionType.Patrol)
@@ -7688,8 +7667,7 @@ public class StudentScript : MonoBehaviour
 										obj10.destination = ReturnDestination;
 										obj10.action = ReturnAction;
 										GetDestinations();
-										CurrentDestination = Destinations[Phase];
-										Pathfinding.target = Destinations[Phase];
+										CurrentDestination = Pathfinding.target = Destinations[Phase];
 									}
 								}
 								PatrolTimer += Time.deltaTime * CharacterAnimation[PatrolAnim].speed;
@@ -7754,11 +7732,9 @@ public class StudentScript : MonoBehaviour
 									{
 										CharacterAnimation.cullingType = AnimationCullingType.BasedOnRenderers;
 										ScheduleBlock obj11 = ScheduleBlocks[Phase];
-										obj11.destination = "Sketch";
-										obj11.action = "Sketch";
+										obj11.destination = obj11.action = "Sketch";
 										GetDestinations();
-										CurrentDestination = SketchPosition;
-										Pathfinding.target = SketchPosition;
+										CurrentDestination = Pathfinding.target = SketchPosition;
 										SewTimer = 0f;
 									}
 								}
@@ -7790,11 +7766,9 @@ public class StudentScript : MonoBehaviour
 										ScheduleBlock obj12 = ScheduleBlocks[Phase];
 										obj12.destination = "LunchSpot";
 										obj12.action = "SitAndEatBento";
-										Actions[Phase] = StudentActionType.SitAndEatBento;
-										CurrentAction = StudentActionType.SitAndEatBento;
+										Actions[Phase] = CurrentAction = StudentActionType.SitAndEatBento;
 										GetDestinations();
-										CurrentDestination = Destinations[Phase];
-										Pathfinding.target = Destinations[Phase];
+										CurrentDestination = Pathfinding.target = Destinations[Phase];
 									}
 								}
 							}
@@ -8063,11 +8037,9 @@ public class StudentScript : MonoBehaviour
 								{
 									DistanceToDestination = 100f;
 									ScheduleBlock obj13 = ScheduleBlocks[2];
-									obj13.destination = "Patrol";
-									obj13.action = "Patrol";
+									obj13.destination = obj13.action = "Patrol";
 									GetDestinations();
-									CurrentDestination = Destinations[Phase];
-									Pathfinding.target = Destinations[Phase];
+									CurrentDestination = Pathfinding.target = Destinations[Phase];
 									SmartPhone.SetActive(value: true);
 								}
 							}
@@ -8091,11 +8063,9 @@ public class StudentScript : MonoBehaviour
 									if (StudentManager.Students[81] == null)
 									{
 										ScheduleBlock obj14 = ScheduleBlocks[4];
-										obj14.destination = "Patrol";
-										obj14.action = "Patrol";
+										obj14.destination = obj14.action = "Patrol";
 										GetDestinations();
-										CurrentDestination = Destinations[Phase];
-										Pathfinding.target = Destinations[Phase];
+										CurrentDestination = Pathfinding.target = Destinations[Phase];
 									}
 									else
 									{
@@ -8171,8 +8141,7 @@ public class StudentScript : MonoBehaviour
 														StudentManager.UpdateLunchtimeHangout(83);
 													}
 												}
-												CurrentDestination = Destinations[Phase];
-												Pathfinding.target = Destinations[Phase];
+												CurrentDestination = Pathfinding.target = Destinations[Phase];
 												SmartPhone.SetActive(value: true);
 												Scrubber.SetActive(value: false);
 												Eraser.SetActive(value: false);
@@ -8206,11 +8175,9 @@ public class StudentScript : MonoBehaviour
 												CharacterAnimation.cullingType = AnimationCullingType.BasedOnRenderers;
 												DistanceToDestination = 100f;
 												ScheduleBlock obj16 = ScheduleBlocks[4];
-												obj16.destination = "Patrol";
-												obj16.action = "Patrol";
+												obj16.destination = obj16.action = "Patrol";
 												GetDestinations();
-												CurrentDestination = Destinations[Phase];
-												Pathfinding.target = Destinations[Phase];
+												CurrentDestination = Pathfinding.target = Destinations[Phase];
 												SmartPhone.SetActive(value: true);
 											}
 										}
@@ -8225,8 +8192,7 @@ public class StudentScript : MonoBehaviour
 									obj17.destination = "Patrol";
 									obj17.action = "Patrol";
 									GetDestinations();
-									CurrentDestination = Destinations[Phase];
-									Pathfinding.target = Destinations[Phase];
+									CurrentDestination = Pathfinding.target = Destinations[Phase];
 									SmartPhone.SetActive(value: true);
 								}
 							}
@@ -8236,15 +8202,13 @@ public class StudentScript : MonoBehaviour
 								{
 									if (StudentManager.LoveManager.RivalWaiting && FollowTarget.transform.position.x > 40f && FollowTarget.DistanceToDestination < 1f)
 									{
-										CurrentDestination = StudentManager.LoveManager.FriendWaitSpot;
-										Pathfinding.target = StudentManager.LoveManager.FriendWaitSpot;
+										CurrentDestination = Pathfinding.target = StudentManager.LoveManager.FriendWaitSpot;
 										CharacterAnimation.CrossFade(IdleAnim);
 									}
 									else if (FollowTarget.Routine && !FollowTarget.InEvent && FollowTarget.CurrentAction == StudentActionType.Clean && FollowTarget.DistanceToDestination < 1f)
 									{
 										FollowTarget.FollowTargetDestination.localPosition = new Vector3(-1f, 0f, -1f);
-										CurrentDestination = FollowTarget.FollowTargetDestination;
-										Pathfinding.target = FollowTarget.FollowTargetDestination;
+										CurrentDestination = Pathfinding.target = FollowTarget.FollowTargetDestination;
 										CharacterAnimation.CrossFade(CleanAnims[CleaningRole]);
 										Scrubber.SetActive(value: true);
 										if (CharacterAnimation[CleanAnims[CleaningRole]].time > CharacterAnimation[CleanAnims[CleaningRole]].length)
@@ -8281,11 +8245,9 @@ public class StudentScript : MonoBehaviour
 										ScheduleBlock obj18 = ScheduleBlocks[Phase];
 										obj18.destination = "LunchSpot";
 										obj18.action = "SitAndEatBento";
-										Actions[Phase] = StudentActionType.SitAndEatBento;
-										CurrentAction = StudentActionType.SitAndEatBento;
+										Actions[Phase] = CurrentAction = StudentActionType.SitAndEatBento;
 										GetDestinations();
-										CurrentDestination = Destinations[Phase];
-										Pathfinding.target = Destinations[Phase];
+										CurrentDestination = Pathfinding.target = Destinations[Phase];
 									}
 									else if (FollowTarget.Routine && !FollowTarget.InEvent && FollowTarget.Phase == 8 && FollowTarget.DistanceToDestination < 1f)
 									{
@@ -8293,11 +8255,9 @@ public class StudentScript : MonoBehaviour
 										ScheduleBlock obj19 = ScheduleBlocks[Phase];
 										obj19.destination = "Locker";
 										obj19.action = "Shoes";
-										Actions[Phase] = StudentActionType.ChangeShoes;
-										CurrentAction = StudentActionType.ChangeShoes;
+										Actions[Phase] = CurrentAction = StudentActionType.ChangeShoes;
 										GetDestinations();
-										CurrentDestination = Destinations[Phase];
-										Pathfinding.target = Destinations[Phase];
+										CurrentDestination = Pathfinding.target = Destinations[Phase];
 									}
 									else if (FollowTarget.ConfessPhase == 5)
 									{
@@ -8307,8 +8267,7 @@ public class StudentScript : MonoBehaviour
 										obj20.action = "Sketch";
 										obj20.time = 99f;
 										GetDestinations();
-										CurrentDestination = Destinations[Phase];
-										Pathfinding.target = Destinations[Phase];
+										CurrentDestination = Pathfinding.target = Destinations[Phase];
 										TargetDistance = 1f;
 										MyController.radius = 0.1f;
 									}
@@ -8381,18 +8340,12 @@ public class StudentScript : MonoBehaviour
 											if (Male)
 											{
 												CharacterAnimation.CrossFade("standTexting_00");
-											}
-											else
-											{
-												CharacterAnimation.CrossFade("f02_standTexting_00");
-											}
-											if (Male)
-											{
 												SmartPhone.transform.localPosition = new Vector3(0.025f, 0.0025f, 0.025f);
 												SmartPhone.transform.localEulerAngles = new Vector3(0f, -160f, 180f);
 											}
 											else
 											{
+												CharacterAnimation.CrossFade("f02_standTexting_00");
 												SmartPhone.transform.localPosition = new Vector3(0.01f, 0.01f, 0.01f);
 												SmartPhone.transform.localEulerAngles = new Vector3(0f, -160f, 165f);
 											}
