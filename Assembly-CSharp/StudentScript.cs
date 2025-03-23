@@ -9356,15 +9356,13 @@ public class StudentScript : MonoBehaviour
 						}
 						else
 						{
-							CurrentDestination = StudentManager.GoAwaySpots.List[StudentID];
-							Pathfinding.target = StudentManager.GoAwaySpots.List[StudentID];
+							CurrentDestination = Pathfinding.target = StudentManager.GoAwaySpots.List[StudentID];
 							CharacterAnimation.CrossFade(IdleAnim);
 							GoAwayTimer += Time.deltaTime;
 							if (GoAwayTimer > 10f)
 							{
 								Debug.Log("This code is only called after a character has spent 10 seconds standing in a 'Go Away'' spot.");
-								CurrentDestination = Destinations[Phase];
-								Pathfinding.target = Destinations[Phase];
+								CurrentDestination = Pathfinding.target = Destinations[Phase];
 								GoAwayTimer = 0f;
 								GoAway = false;
 							}
@@ -9381,15 +9379,13 @@ public class StudentScript : MonoBehaviour
 									if (StudentManager.EightiesOfferHelp != null)
 									{
 										StudentManager.EightiesOfferHelp.UpdateLocation();
-										StudentManager.EightiesOfferHelp.enabled = true;
-										StudentManager.EightiesOfferHelp.Prompt.enabled = true;
+										StudentManager.EightiesOfferHelp.enabled = StudentManager.EightiesOfferHelp.Prompt.enabled = true;
 									}
 								}
 								else if (StudentID == StudentManager.RivalID)
 								{
 									StudentManager.OsanaOfferHelp.UpdateLocation();
-									StudentManager.OsanaOfferHelp.enabled = true;
-									StudentManager.OsanaOfferHelp.Prompt.enabled = true;
+									StudentManager.OsanaOfferHelp.enabled = StudentManager.OsanaOfferHelp.Prompt.enabled = true;
 								}
 								else if (StudentID == 5)
 								{
@@ -9398,8 +9394,7 @@ public class StudentScript : MonoBehaviour
 									{
 										StudentManager.FragileOfferHelp.gameObject.SetActive(value: true);
 										StudentManager.FragileOfferHelp.UpdateLocation();
-										StudentManager.FragileOfferHelp.enabled = true;
-										StudentManager.FragileOfferHelp.Prompt.enabled = true;
+										StudentManager.FragileOfferHelp.enabled = StudentManager.FragileOfferHelp.Prompt.enabled = true;
 									}
 								}
 							}
@@ -9489,8 +9484,7 @@ public class StudentScript : MonoBehaviour
 							Pathfinding.target = Destinations[Phase];
 							if (Follower != null)
 							{
-								Follower.CurrentDestination = Follower.FollowTarget.transform;
-								Follower.Pathfinding.target = Follower.FollowTarget.transform;
+								Follower.CurrentDestination = Follower.Pathfinding.target = Follower.FollowTarget.transform;
 								FollowTargetDestination.localPosition = new Vector3(0f, 0f, 0f);
 							}
 							StopMeeting();
@@ -9519,8 +9513,7 @@ public class StudentScript : MonoBehaviour
 			{
 				if (WitnessedMurder && Persona == PersonaType.Heroic)
 				{
-					Pathfinding.target = Yandere.transform;
-					CurrentDestination = Yandere.transform;
+					Pathfinding.target = CurrentDestination = Yandere.transform;
 				}
 				if (FollowTarget != null && Vector3.Distance(base.transform.position, FollowTarget.transform.position) < 10f && FollowTarget.Attacked && FollowTarget.Alive && !FollowTarget.Tranquil && !Blind)
 				{
@@ -9537,8 +9530,7 @@ public class StudentScript : MonoBehaviour
 					}
 					if (StudentManager.Headmaster.Heartbroken.Dead)
 					{
-						StruggleBar.Struggling = false;
-						Struggling = false;
+						StruggleBar.Struggling = Struggling = false;
 					}
 				}
 				if (!Dying && !Spraying)
@@ -9772,8 +9764,7 @@ public class StudentScript : MonoBehaviour
 							}
 							else
 							{
-								Pathfinding.canSearch = false;
-								Pathfinding.canMove = false;
+								Pathfinding.canSearch = Pathfinding.canMove = false;
 								if (!Halt)
 								{
 									if (StudentID > 1)
@@ -9810,8 +9801,7 @@ public class StudentScript : MonoBehaviour
 										{
 											if (Club == ClubType.Council)
 											{
-												Pathfinding.target = StudentManager.CorpseLocation;
-												CurrentDestination = StudentManager.CorpseLocation;
+												Pathfinding.target = CurrentDestination = StudentManager.CorpseLocation;
 											}
 											else
 											{
@@ -9819,8 +9809,7 @@ public class StudentScript : MonoBehaviour
 												{
 													PetDestination = UnityEngine.Object.Instantiate(EmptyGameObject, Seat.position + Seat.forward * -0.5f, Quaternion.identity).transform;
 												}
-												Pathfinding.target = PetDestination;
-												CurrentDestination = PetDestination;
+												Pathfinding.target = CurrentDestination = PetDestination;
 											}
 											ReportPhase = 3;
 										}
@@ -9889,10 +9878,8 @@ public class StudentScript : MonoBehaviour
 													Subtitle.UpdateLabel(SubtitleType.PetWeaponReport, 2, 3f);
 												}
 												MyTeacher = StudentManager.Teachers[Class];
-												MyTeacher.CurrentDestination = MyTeacher.transform;
-												MyTeacher.Pathfinding.target = MyTeacher.transform;
-												MyTeacher.Pathfinding.canSearch = false;
-												MyTeacher.Pathfinding.canMove = false;
+												MyTeacher.CurrentDestination = MyTeacher.Pathfinding.target = MyTeacher.transform;
+												MyTeacher.Pathfinding.canSearch = MyTeacher.Pathfinding.canMove = false;
 												MyTeacher.CharacterAnimation.CrossFade(MyTeacher.IdleAnim);
 												MyTeacher.ListeningToReport = true;
 												MyTeacher.Routine = false;
@@ -10025,8 +10012,7 @@ public class StudentScript : MonoBehaviour
 										ReportPhase = 100;
 										Fleeing = false;
 										Persona = OriginalPersona;
-										IgnoringPettyActions = true;
-										Guarding = true;
+										IgnoringPettyActions = Guarding = true;
 									}
 								}
 								else if (Persona == PersonaType.Heroic)
@@ -10038,8 +10024,7 @@ public class StudentScript : MonoBehaviour
 										CharacterAnimation.CrossFade(ReadyToFightAnim);
 										targetRotation = Quaternion.LookRotation(new Vector3(Yandere.Hips.transform.position.x, base.transform.position.y, Yandere.Hips.transform.position.z) - base.transform.position);
 										base.transform.rotation = Quaternion.Slerp(base.transform.rotation, targetRotation, 10f * Time.deltaTime);
-										Pathfinding.canSearch = false;
-										Pathfinding.canMove = false;
+										Pathfinding.canSearch = Pathfinding.canMove = false;
 									}
 									else
 									{
@@ -10119,8 +10104,7 @@ public class StudentScript : MonoBehaviour
 											else if (Yandere.Mask != null)
 											{
 												Yandere.EmptyHands();
-												Pathfinding.canSearch = false;
-												Pathfinding.canMove = false;
+												Pathfinding.canSearch = Pathfinding.canMove = false;
 												TargetDistance = 1f;
 												Yandere.CharacterAnimation.CrossFade("f02_unmasking_00");
 												string text8 = "";
@@ -10174,8 +10158,7 @@ public class StudentScript : MonoBehaviour
 										ReactionTimer += Time.deltaTime;
 										if (ReactionTimer > 5f)
 										{
-											CurrentDestination = StudentManager.Exit;
-											Pathfinding.target = StudentManager.Exit;
+											CurrentDestination = Pathfinding.target = StudentManager.Exit;
 										}
 									}
 								}
@@ -10187,8 +10170,7 @@ public class StudentScript : MonoBehaviour
 									ReactionTimer += Time.deltaTime;
 									if (ReactionTimer > 5f)
 									{
-										CurrentDestination = StudentManager.Exit;
-										Pathfinding.target = StudentManager.Exit;
+										CurrentDestination = Pathfinding.target = StudentManager.Exit;
 									}
 								}
 								else if (Persona == PersonaType.SocialButterfly)
@@ -10270,8 +10252,7 @@ public class StudentScript : MonoBehaviour
 										if (LovestruckTarget == 0 || StudentManager.Students[LovestruckTarget] == null || StudentManager.Students[LovestruckTarget].Fleeing)
 										{
 											Debug.Log("Lovestruck Target is null or fleeing, so destination is being set to Exit.");
-											Pathfinding.target = StudentManager.Exit;
-											CurrentDestination = StudentManager.Exit;
+											Pathfinding.target = CurrentDestination = StudentManager.Exit;
 											ReportPhase = 3;
 										}
 										else if (StudentManager.Students[LovestruckTarget].InEvent && StudentManager.Students[LovestruckTarget].Ragdoll.Zs.activeInHierarchy)
@@ -10286,8 +10267,7 @@ public class StudentScript : MonoBehaviour
 										{
 											Debug.Log("A character wants to run to someone to tell them about murder, but that character is either gone or in a garbage bag.");
 											Subtitle.UpdateLabel(SubtitleType.RaibaruRivalDeathReaction, 5, 10f);
-											Pathfinding.target = StudentManager.Exit;
-											CurrentDestination = StudentManager.Exit;
+											Pathfinding.target = CurrentDestination = StudentManager.Exit;
 											Pathfinding.enabled = true;
 											ReportPhase = 3;
 										}
@@ -10297,8 +10277,7 @@ public class StudentScript : MonoBehaviour
 											Pathfinding.target = Corpse.Student.Hips;
 											SpecialRivalDeathReaction = true;
 											WitnessRivalDiePhase = 1;
-											Fleeing = false;
-											Routine = false;
+											Fleeing = Routine = false;
 											TargetDistance = 0.5f;
 										}
 										else if (StudentManager.Students[LovestruckTarget].Routine && Yandere.CanMove)
@@ -10313,23 +10292,12 @@ public class StudentScript : MonoBehaviour
 											}
 											StudentManager.Students[LovestruckTarget].EmptyHands();
 											CharacterAnimation.CrossFade(ScaredAnim);
-											StudentManager.Students[LovestruckTarget].Pathfinding.canSearch = false;
-											StudentManager.Students[LovestruckTarget].Pathfinding.canMove = false;
-											StudentManager.Students[LovestruckTarget].Pathfinding.enabled = false;
-											StudentManager.Students[LovestruckTarget].Investigating = false;
-											StudentManager.Students[LovestruckTarget].CheckingNote = false;
-											StudentManager.Students[LovestruckTarget].Meeting = false;
-											StudentManager.Students[LovestruckTarget].AwareOfCorpse = true;
-											StudentManager.Students[LovestruckTarget].Routine = false;
-											StudentManager.Students[LovestruckTarget].Blind = true;
-											ReportingMurderToSenpai = true;
-											Pathfinding.enabled = false;
+											StudentManager.Students[LovestruckTarget].Pathfinding.canSearch = StudentManager.Students[LovestruckTarget].Pathfinding.canMove = StudentManager.Students[LovestruckTarget].Pathfinding.enabled = StudentManager.Students[LovestruckTarget].Investigating = StudentManager.Students[LovestruckTarget].CheckingNote = StudentManager.Students[LovestruckTarget].Meeting = StudentManager.Students[LovestruckTarget].Routine = Pathfinding.enabled = false;
+											StudentManager.Students[LovestruckTarget].AwareOfCorpse = StudentManager.Students[LovestruckTarget].Blind = ReportingMurderToSenpai = true;
 											if (WitnessedMurder && !SawMask)
 											{
 												Yandere.CharacterAnimation.CrossFade("f02_readyToFight_00");
-												Yandere.Jukebox.gameObject.active = false;
-												Yandere.MainCamera.enabled = false;
-												Yandere.RPGCamera.enabled = false;
+												Yandere.Jukebox.gameObject.active = Yandere.MainCamera.enabled = Yandere.RPGCamera.enabled = false;
 												Yandere.Jukebox.Volume = 0f;
 												Yandere.CanMove = false;
 												StudentManager.LovestruckCamera.transform.parent = base.transform;
@@ -10339,17 +10307,21 @@ public class StudentScript : MonoBehaviour
 												Debug.Log("Yandere is turning to face Pursuer.");
 												Yandere.transform.rotation = Quaternion.LookRotation(new Vector3(Hips.transform.position.x, Yandere.transform.position.y, Hips.transform.position.z) - Yandere.transform.position);
 											}
+											
+											int newCorpseReportValue = 1;
+											
 											if (WitnessedMurder && !SawMask)
 											{
 												Subtitle.UpdateLabel(SubtitleType.LovestruckMurderReport, 0, 5f);
 											}
-											else if (LovestruckTarget == 1)
-											{
-												Subtitle.UpdateLabel(SubtitleType.LovestruckCorpseReport, 0, 5f);
-											}
 											else
 											{
-												Subtitle.UpdateLabel(SubtitleType.LovestruckCorpseReport, 1, 5f);
+												if (LovestruckTarget == 1)
+												{
+													newCorpseReportValue = 0;
+												}
+												
+												Subtitle.UpdateLabel(SubtitleType.LovestruckCorpseReport, newCorpseReportValue, 5f);
 											}
 											ReportPhase++;
 										}
@@ -10389,12 +10361,9 @@ public class StudentScript : MonoBehaviour
 												StudentManager.Students[LovestruckTarget].CharacterAnimation.CrossFade(StudentManager.Students[LovestruckTarget].SprintAnim);
 												StudentManager.Students[LovestruckTarget].Pathfinding.target = StudentManager.Exit;
 												StudentManager.Students[LovestruckTarget].CurrentDestination = StudentManager.Exit;
-												StudentManager.Students[LovestruckTarget].Pathfinding.canSearch = true;
-												StudentManager.Students[LovestruckTarget].Pathfinding.canMove = true;
-												StudentManager.Students[LovestruckTarget].Pathfinding.enabled = true;
+												StudentManager.Students[LovestruckTarget].Pathfinding.canSearch = StudentManager.Students[LovestruckTarget].Pathfinding.canMove = StudentManager.Students[LovestruckTarget].Pathfinding.enabled = true;
 												StudentManager.Students[LovestruckTarget].Pathfinding.speed = 4f;
-												Pathfinding.target = StudentManager.Exit;
-												CurrentDestination = StudentManager.Exit;
+												Pathfinding.target = CurrentDestination = StudentManager.Exit;
 												Pathfinding.enabled = true;
 												ReportPhase++;
 												if (StudentManager.Students[LovestruckTarget].InCouple && StudentManager.Students[LovestruckTarget].Partner != null && Vector3.Distance(StudentManager.Students[LovestruckTarget].transform.position, StudentManager.Students[LovestruckTarget].Partner.transform.position) < 5f)
@@ -10404,9 +10373,7 @@ public class StudentScript : MonoBehaviour
 													partner.CharacterAnimation.CrossFade(partner.SprintAnim);
 													partner.Pathfinding.target = StudentManager.Exit;
 													partner.CurrentDestination = StudentManager.Exit;
-													partner.Pathfinding.canSearch = true;
-													partner.Pathfinding.canMove = true;
-													partner.Pathfinding.enabled = true;
+													partner.Pathfinding.canSearch = partner.Pathfinding.canMove = partner.Pathfinding.enabled = true;
 													partner.Pathfinding.speed = 4f;
 												}
 											}
