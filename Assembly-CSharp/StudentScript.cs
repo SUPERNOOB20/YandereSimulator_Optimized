@@ -4780,17 +4780,17 @@ public class StudentScript : MonoBehaviour
 							CharacterAnimation[ShyAnim].weight = 0.5f;
 						}
 						SmartPhone.SetActive(value: false);
-						Pathfinding.canSearch = false;
-						Pathfinding.canMove = false;
+						Pathfinding.canSearch = Pathfinding.canMove = false;
 						ShoeRemoval.StartChangingShoes();
-						ShoeRemoval.enabled = true;
-						ChangingShoes = true;
-						CanTalk = false;
-						Routine = false;
+						ShoeRemoval.enabled = ChangingShoes = true;
+						CanTalk = Routine = false;
 					}
 				}
 			}
-			else if (Phase < ScheduleBlocks.Length - 1 && Clock.HourTime >= ScheduleBlocks[Phase].time && !InEvent && !Meeting && ClubActivityPhase < 16 && !Ragdoll.Zs.activeInHierarchy && !Dying && !Posing)
+
+			bool isStudentAvailable = Clock.HourTime >= ScheduleBlocks[Phase].time && !InEvent && !Meeting && ClubActivityPhase < 16 && !Ragdoll.Zs.activeInHierarchy && !Dying && !Posing;
+   
+			else if (Phase < ScheduleBlocks.Length - 1 && isStudentAvailable)
 			{
 				if (Actions[Phase] == StudentActionType.Clean && Pushable && !Meeting)
 				{
@@ -4810,11 +4810,7 @@ public class StudentScript : MonoBehaviour
 				{
 					StopVomitting();
 				}
-				SitInInfirmary = false;
-				Pushable = false;
-				Headache = false;
-				Sedated = false;
-				Hurry = false;
+				SitInInfirmary = Pushable = Headache = Sedated = Hurry = false;
 				if (Schoolwear == 1)
 				{
 					SunbathePhase = 0;
@@ -4886,22 +4882,19 @@ public class StudentScript : MonoBehaviour
 					if (StudentManager.Week == 1 && Clock.Weekday == 4)
 					{
 						Debug.Log("The bullies are going to go sunbathe now.");
-						scheduleBlock.destination = "Sunbathe";
-						scheduleBlock.action = "Sunbathe";
+						scheduleBlock.destination = scheduleBlock.action = "Sunbathe";
 					}
 					else
 					{
 						Debug.Log("The bullies are going to patrol now.");
-						scheduleBlock.destination = "Patrol";
-						scheduleBlock.action = "Patrol";
+						scheduleBlock.destination = scheduleBlock.action = "Patrol";
 					}
 					GetDestinations();
 				}
 				if (!StudentManager.ReactedToGameLeader && Actions[Phase] == StudentActionType.Bully && !StudentManager.Bully)
 				{
 					ScheduleBlock obj4 = ScheduleBlocks[4];
-					obj4.destination = "Sunbathe";
-					obj4.action = "Sunbathe";
+					obj4.destination = obj4.action = "Sunbathe";
 					GetDestinations();
 				}
 				if (Sedated)
@@ -4910,8 +4903,7 @@ public class StudentScript : MonoBehaviour
 					Sedated = false;
 				}
 				CurrentAction = Actions[Phase];
-				CurrentDestination = Destinations[Phase];
-				Pathfinding.target = Destinations[Phase];
+				CurrentDestination = Pathfinding.target = Destinations[Phase];
 				if (Rival && DateGlobals.Weekday == DayOfWeek.Friday && !InCouple)
 				{
 					if (Rival && DateGlobals.Weekday == DayOfWeek.Friday)
@@ -4949,8 +4941,7 @@ public class StudentScript : MonoBehaviour
 				PinkSeifuku.SetActive(value: false);
 				if (!Paired)
 				{
-					Pathfinding.canSearch = true;
-					Pathfinding.canMove = true;
+					Pathfinding.canSearch = Pathfinding.canMove = true;
 				}
 				if (Persona != PersonaType.PhoneAddict && !Sleuthing)
 				{
@@ -5061,7 +5052,7 @@ public class StudentScript : MonoBehaviour
 					TargetDistance = 0.5f;
 					if (FollowTarget != null && !FollowTarget.Alive && !WitnessedCorpse)
 					{
-						if (FollowTarget.CurrentAction == StudentActionType.Clean)
+						if ((FollowTarget.CurrentAction == StudentActionType.Clean) || (FollowTarget.ChangingShoes))
 						{
 							FollowTarget.FollowTargetDestination.localPosition = new Vector3(-1f, 0f, -1f);
 						}
@@ -5076,10 +5067,6 @@ public class StudentScript : MonoBehaviour
 						else if (FollowTarget.CameraReacting)
 						{
 							FollowTarget.FollowTargetDestination.localPosition = new Vector3(0f, 0f, -1f);
-						}
-						else if (FollowTarget.ChangingShoes)
-						{
-							FollowTarget.FollowTargetDestination.localPosition = new Vector3(-1f, 0f, -1f);
 						}
 						else
 						{
@@ -5102,17 +5089,17 @@ public class StudentScript : MonoBehaviour
 							WateringCan.transform.localPosition = new Vector3(0f, 0.0135f, -0.184f);
 							WateringCan.transform.localEulerAngles = new Vector3(0f, 90f, 30f);
 						}
-						if (Clock.Period == 6 && !WaterLow && StudentManager.Patrols.List[StudentID] != StudentManager.GardeningPatrols[StudentID - 71])
+						if (Clock.Period == 6 && !WaterLow && StudentManager.Patrols.List[StudentID] != StudentManager.GardeningPatrols[StudentID % 71])
 						{
-							StudentManager.Patrols.List[StudentID] = StudentManager.GardeningPatrols[StudentID - 71];
+							StudentManager.Patrols.List[StudentID] = StudentManager.GardeningPatrols[StudentID % 71];
 							ClubAnim = "f02_waterPlantLow_00";
 							CurrentDestination = StudentManager.Patrols.List[StudentID].GetChild(PatrolID);
 							Pathfinding.target = CurrentDestination;
 						}
 					}
-					else if (Clock.Period == 6 && StudentManager.Patrols.List[StudentID] != StudentManager.GardeningPatrols[StudentID - 71])
+					else if (Clock.Period == 6 && StudentManager.Patrols.List[StudentID] != StudentManager.GardeningPatrols[StudentID % 71])
 					{
-						StudentManager.Patrols.List[StudentID] = StudentManager.GardeningPatrols[StudentID - 71];
+						StudentManager.Patrols.List[StudentID] = StudentManager.GardeningPatrols[StudentID % 71];
 						CurrentDestination = StudentManager.Patrols.List[StudentID].GetChild(PatrolID);
 						Pathfinding.target = CurrentDestination;
 					}
@@ -5152,14 +5139,13 @@ public class StudentScript : MonoBehaviour
 				}
 				if (!StudentManager.Eighties && Phase == 8 && StudentID == 36)
 				{
-					StudentManager.Clubs.List[StudentID].position = StudentManager.Clubs.List[71].position;
-					StudentManager.Clubs.List[StudentID].rotation = StudentManager.Clubs.List[71].rotation;
+					StudentManager.Clubs.List[36].position = StudentManager.Clubs.List[71].position;
+					StudentManager.Clubs.List[36].rotation = StudentManager.Clubs.List[71].rotation;
 					ClubAnim = GameAnim;
 				}
 				if (MyPlate != null && MyPlate.parent == RightHand)
 				{
-					CurrentDestination = StudentManager.Clubs.List[StudentID];
-					Pathfinding.target = StudentManager.Clubs.List[StudentID];
+					CurrentDestination = Pathfinding.target = StudentManager.Clubs.List[StudentID];
 				}
 				if (Persona == PersonaType.Sleuth)
 				{
@@ -5194,19 +5180,15 @@ public class StudentScript : MonoBehaviour
 				if (Character.transform.localPosition.y == -0.25f)
 				{
 					Debug.Log("Swimming club special case was reached.");
-					Destinations[Phase] = StudentManager.Clubs.List[ID].GetChild(ClubActivityPhase - 2);
-					CurrentDestination = StudentManager.Clubs.List[ID].GetChild(ClubActivityPhase - 2);
-					Pathfinding.target = StudentManager.Clubs.List[ID].GetChild(ClubActivityPhase - 2);
+					Destinations[Phase] = CurrentDestination = Pathfinding.target = StudentManager.Clubs.List[ID].GetChild(ClubActivityPhase - 2);
 				}
 				if (Actions[Phase] == StudentActionType.Sunbathe && SunbathePhase > 1)
 				{
-					CurrentDestination = StudentManager.SunbatheSpots[StudentID];
-					Pathfinding.target = StudentManager.SunbatheSpots[StudentID];
+					CurrentDestination = Pathfinding.target = StudentManager.SunbatheSpots[StudentID];
 				}
 				if (StudentID == 10 && FollowTarget != null && !FollowTarget.Alive && StudentManager.LastKnownOsana.position != Vector3.zero)
 				{
-					Pathfinding.target = StudentManager.LastKnownOsana;
-					CurrentDestination = StudentManager.LastKnownOsana;
+					Pathfinding.target = CurrentDestination = StudentManager.LastKnownOsana;
 				}
 				if (Phoneless)
 				{
@@ -5234,7 +5216,7 @@ public class StudentScript : MonoBehaviour
 						Pathfinding.target = Destinations[Phase];
 					}
 				}
-				if (!Teacher && Club != ClubType.Delinquent && Club != ClubType.Sports)
+				if (!Teacher && Club != (ClubType.Delinquent && ClubType.Sports))
 				{
 					if (Clock.Period == 2 || Clock.Period == 4)
 					{
@@ -5263,7 +5245,7 @@ public class StudentScript : MonoBehaviour
 							Hurry = true;
 							Pathfinding.speed = 4f;
 						}
-						if (CurrentAction == StudentActionType.AtLocker || CurrentAction == StudentActionType.ChangeShoes || CurrentAction == StudentActionType.SitAndTakeNotes)
+						if (CurrentAction == (StudentActionType.AtLocker || StudentActionType.ChangeShoes || StudentActionType.SitAndTakeNotes))
 						{
 							Debug.Log(Name + "'s next destination should be their locker.");
 							if (SchoolwearUnavailable)
@@ -5349,13 +5331,11 @@ public class StudentScript : MonoBehaviour
 				{
 					StudentManager.Clubs.List[41].position = CurrentDestination.position;
 				}
-				CharacterAnimation[SitAnim].weight = 0f;
-				CharacterAnimation[SocialSitAnim].weight = 0f;
+				CharacterAnimation[SitAnim].weight = CharacterAnimation[SocialSitAnim].weight = 0f;
 				if (MustChangeClothing && Schoolwear == 2)
 				{
 					Debug.Log(Name + " really ought to change their clothing before they proceed with their routine.");
-					CurrentDestination = StudentManager.StrippingPositions[GirlID];
-					Pathfinding.target = StudentManager.StrippingPositions[GirlID];
+					CurrentDestination = Pathfinding.target = StudentManager.StrippingPositions[GirlID];
 				}
 				if (Bullied && Clock.HourTime > 16f)
 				{
@@ -5364,8 +5344,7 @@ public class StudentScript : MonoBehaviour
 					obj6.destination = "Locker";
 					obj6.action = "Shoes";
 					GetDestinations();
-					CurrentDestination = Destinations[Phase];
-					Pathfinding.target = Destinations[Phase];
+					CurrentDestination = Pathfinding.target = Destinations[Phase];
 				}
 				if (StudentManager.CustomMode)
 				{
