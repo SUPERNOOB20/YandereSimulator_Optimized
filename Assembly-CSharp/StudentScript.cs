@@ -3441,7 +3441,7 @@ public class StudentScript : MonoBehaviour
 			OriginalWalkAnim = WalkAnim;
 			if (StudentGlobals.GetStudentGrudge(StudentID))
 			{
-				if (Persona != PersonaType.Coward && Persona != PersonaType.Fragile && Persona != PersonaType.Evil && Club != ClubType.Delinquent)
+				if (Persona != (PersonaType.Coward && PersonaType.Fragile && PersonaType.Evil) && Club != ClubType.Delinquent)
 				{
 					CameraAnims = EvilAnims;
 					Reputation.PendingRep -= 10f;
@@ -4072,7 +4072,7 @@ public class StudentScript : MonoBehaviour
 			PickRandomAnim();
 			PickRandomSleuthAnim();
 			Renderer component = Armband.GetComponent<Renderer>();
-			if (Club != 0 && (StudentID == 21 || StudentID == 26 || StudentID == 31 || StudentID == 36 || StudentID == 41 || StudentID == 46 || StudentID == 51 || StudentID == 56 || StudentID == 61 || StudentID == 66 || StudentID == 71))
+			if (Club != 0 && ((StudentID >= 21) && (StudentID <= 71) && (StudentID % 5 == 1)))
 			{
 				Armband.SetActive(value: true);
 				ClubLeader = true;
@@ -4194,10 +4194,11 @@ public class StudentScript : MonoBehaviour
 				}
 				ScaredAnim = ReadyToFightAnim;
 				ParanoidAnim = GuardAnim;
-				CameraAnims[1] = IdleAnim;
-				CameraAnims[2] = IdleAnim;
-				CameraAnims[3] = IdleAnim;
-				ClubMemberID = StudentID - 85;
+    				for (int i = 0; i < 3; i++)
+				{
+					CameraAnims[i] = IdleAnim;
+    				}
+				ClubMemberID = StudentID % 85;
 				VisionDistance *= 2f;
 				if (StudentManager.MissionMode)
 				{
@@ -4209,10 +4210,8 @@ public class StudentScript : MonoBehaviour
 			}
 			if (StudentID == 81 && StudentGlobals.GetStudentBroken(81))
 			{
-				Destinations[2] = StudentManager.BrokenSpot;
-				Destinations[4] = StudentManager.BrokenSpot;
-				Actions[2] = StudentActionType.Shamed;
-				Actions[4] = StudentActionType.Shamed;
+				Destinations[2] = Destinations[4] = StudentManager.BrokenSpot;				 
+				Actions[2] = Actions[4] = StudentActionType.Shamed;
 			}
 		}
 		UpdateAnimLayers();
@@ -4222,11 +4221,12 @@ public class StudentScript : MonoBehaviour
 			{
 				LongHair[0] = LongHair[2];
 			}
-			if (StudentID != 55 && StudentID != 40)
+			else if (StudentID != 55)
 			{
-				LongHair[0] = null;
-				LongHair[1] = null;
-				LongHair[2] = null;
+   				for (int i = 0; i < 3; i++)
+				{
+					LongHair[i] = null;
+    				}
 			}
 		}
 		if (StudentID == 90)
@@ -5956,8 +5956,7 @@ public class StudentScript : MonoBehaviour
 				}
 				if (Pathfinding.canMove)
 				{
-					Pathfinding.canSearch = false;
-					Pathfinding.canMove = false;
+					Pathfinding.canSearch = Pathfinding.canMove = false;
 					if (Actions[Phase] != StudentActionType.Clean && !Infatuated)
 					{
 						Obstacle.enabled = true;
@@ -5988,8 +5987,7 @@ public class StudentScript : MonoBehaviour
 						}
 						else if (!GoAway)
 						{
-							CurrentDestination = Destinations[Phase];
-							Pathfinding.target = Destinations[Phase];
+							CurrentDestination = Pathfinding.target = Destinations[Phase];
 						}
 					}
 					else if (ClubAttire)
@@ -6002,8 +6000,7 @@ public class StudentScript : MonoBehaviour
 								ChangingBooth.Student = this;
 								ChangingBooth.CheckYandereClub();
 							}
-							CurrentDestination = ChangingBooth.transform;
-							Pathfinding.target = ChangingBooth.transform;
+							CurrentDestination = Pathfinding.target = ChangingBooth.transform;
 						}
 						else
 						{
@@ -6012,8 +6009,7 @@ public class StudentScript : MonoBehaviour
 					}
 					else if (Actions[Phase] != StudentActionType.Clean)
 					{
-						CurrentDestination = Destinations[Phase];
-						Pathfinding.target = Destinations[Phase];
+						CurrentDestination = Pathfinding.target = Destinations[Phase];
 					}
 				}
 				if (!InEvent)
@@ -6799,14 +6795,6 @@ public class StudentScript : MonoBehaviour
 										{
 											CharacterAnimation.CrossFade("f02_vocalWait_00");
 										}
-										else if (StudentManager.PracticeMusic.time > 32f)
-										{
-											CharacterAnimation.CrossFade("f02_vocalSingB_00");
-										}
-										else if (StudentManager.PracticeMusic.time > 24f)
-										{
-											CharacterAnimation.CrossFade("f02_vocalSingB_00");
-										}
 										else if (StudentManager.PracticeMusic.time > 17f)
 										{
 											CharacterAnimation.CrossFade("f02_vocalSingB_00");
@@ -6885,17 +6873,13 @@ public class StudentScript : MonoBehaviour
 										{
 											CharacterAnimation.CrossFade("f02_guitarCelebrate_00");
 										}
-										else if (StudentManager.PracticeMusic.time > 112f)
+										else if (StudentManager.PracticeMusic.time > 112f) || ((StudentManager.PracticeMusic.time > 80f) & (StudentManager.PracticeMusic.time <= 88f))
 										{
 											CharacterAnimation.CrossFade("f02_guitarWait_00");
 										}
 										else if (StudentManager.PracticeMusic.time > 88f)
 										{
 											CharacterAnimation.CrossFade("f02_guitarPlayA_00");
-										}
-										else if (StudentManager.PracticeMusic.time > 80f)
-										{
-											CharacterAnimation.CrossFade("f02_guitarWait_00");
 										}
 										else if (StudentManager.PracticeMusic.time > 64f)
 										{
@@ -6916,7 +6900,10 @@ public class StudentScript : MonoBehaviour
 										}
 										Drumsticks[0].SetActive(value: true);
 										Drumsticks[1].SetActive(value: true);
-										if (!StudentManager.PracticeMusic.isPlaying)
+
+										bool isStudentUsingTheirDrums = (!StudentManager.PracticeMusic.isPlaying) || ((StudentManager.PracticeMusic.time > 16f) && (StudentManager.PracticeMusic.time <= 38f)) || ((StudentManager.PracticeMusic.time > 0f) && (StudentManager.PracticeMusic.time <= 16f)) || ((StudentManager.PracticeMusic.time > 80f) && (StudentManager.PracticeMusic.time <= 96f)) || ((StudentManager.PracticeMusic.time > 108f) && (StudentManager.PracticeMusic.time <= 114.5f));
+   
+										if (isStudentUsingTheirDrums)
 										{
 											CharacterAnimation.CrossFade("f02_drumsIdle_00");
 										}
@@ -6924,33 +6911,13 @@ public class StudentScript : MonoBehaviour
 										{
 											CharacterAnimation.CrossFade("f02_drumsCelebrate_00");
 										}
-										else if (StudentManager.PracticeMusic.time > 108f)
-										{
-											CharacterAnimation.CrossFade("f02_drumsIdle_00");
-										}
 										else if (StudentManager.PracticeMusic.time > 96f)
 										{
 											CharacterAnimation.CrossFade("f02_drumsPlaySlow_00");
-										}
-										else if (StudentManager.PracticeMusic.time > 80f)
-										{
-											CharacterAnimation.CrossFade("f02_drumsIdle_00");
-										}
-										else if (StudentManager.PracticeMusic.time > 38f)
+										}	
+										else if ((StudentManager.PracticeMusic.time > 16f) && (StudentManager.PracticeMusic.time <= 38f))
 										{
 											CharacterAnimation.CrossFade("f02_drumsPlay_00");
-										}
-										else if (StudentManager.PracticeMusic.time > 46f)
-										{
-											CharacterAnimation.CrossFade("f02_drumsIdle_00");
-										}
-										else if (StudentManager.PracticeMusic.time > 16f)
-										{
-											CharacterAnimation.CrossFade("f02_drumsPlay_00");
-										}
-										else if (StudentManager.PracticeMusic.time > 0f)
-										{
-											CharacterAnimation.CrossFade("f02_drumsIdle_00");
 										}
 									}
 									else if (StudentID == 55)
