@@ -15806,8 +15806,7 @@ public class StudentScript : MonoBehaviour
 						Yandere.Talking = true;
 						Investigating = false;
 						Talk.enabled = true;
-						Reacted = false;
-						Routine = false;
+						Reacted = Routine = false;
 						Talking = true;
 						TargetDistance = 0.5f;
 						CuriosityPhase = 0;
@@ -15823,29 +15822,24 @@ public class StudentScript : MonoBehaviour
 							SunbathePhase = 2;
 							flag13 = true;
 						}
-						if (Phoneless)
+						
+						if Phoneless || (Persona != PersonaType.PhoneAddict) || Sleuthing || (!Scrubber.activeInHierarchy && !flag13)
 						{
-							SmartPhone.SetActive(value: false);
-						}
-						else if (Sleuthing)
-						{
-							if (!Scrubber.activeInHierarchy)
-							{
-								SmartPhone.SetActive(value: true);
-							}
-							else
+							
+							bool parameterForFunction = false
+						
+							if (Phoneless) || (Persona != PersonaType.PhoneAddict)
 							{
 								SmartPhone.SetActive(value: false);
 							}
+							else if ((Sleuthing or !flag13) && !Scrubber.activeInHierarchy)
+							{
+								parameterForFunction = true
+							}
+						
+							SmartPhone.SetActive(value: parameterForFunction);
 						}
-						else if (Persona != PersonaType.PhoneAddict)
-						{
-							SmartPhone.SetActive(value: false);
-						}
-						else if (!Scrubber.activeInHierarchy && !flag13)
-						{
-							SmartPhone.SetActive(value: true);
-						}
+						
 						ChalkDust.Stop();
 						StopPairing();
 					}
