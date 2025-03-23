@@ -19661,21 +19661,10 @@ public class StudentScript : MonoBehaviour
 						{
 							AssignBloodGuardLocations();
 						}
-						if (StudentID == 86)
+						else if ((StudentID >= 86) && (StudentID <= 89))
 						{
-							Pathfinding.target = StudentManager.BloodGuardLocation[1];
-						}
-						else if (StudentID == 87)
-						{
-							Pathfinding.target = StudentManager.BloodGuardLocation[2];
-						}
-						else if (StudentID == 88)
-						{
-							Pathfinding.target = StudentManager.BloodGuardLocation[3];
-						}
-						else if (StudentID == 89)
-						{
-							Pathfinding.target = StudentManager.BloodGuardLocation[4];
+							int newLocation = StudentID - 85;
+							Pathfinding.target = StudentManager.BloodGuardLocation[newLocation];
 						}
 						CurrentDestination = Pathfinding.target;
 						Guarding = true;
@@ -19687,14 +19676,12 @@ public class StudentScript : MonoBehaviour
 					if (Vector3.Distance(base.transform.position, Seat.position) < 2f)
 					{
 						Debug.Log("...but there is danger in their classroom, so they will flee the school instead.");
-						Pathfinding.target = StudentManager.Exit;
-						CurrentDestination = StudentManager.Exit;
+						Pathfinding.target = CurrentDestination = StudentManager.Exit;
 					}
 					else
 					{
 						PetDestination = UnityEngine.Object.Instantiate(EmptyGameObject, Seat.position + Seat.forward * -0.5f, Quaternion.identity).transform;
-						Pathfinding.target = PetDestination;
-						CurrentDestination = PetDestination;
+						Pathfinding.target = CurrentDestination = PetDestination;
 					}
 					if (Distracting)
 					{
@@ -19702,8 +19689,7 @@ public class StudentScript : MonoBehaviour
 						{
 							DistractionTarget.TargetedForDistraction = false;
 						}
-						ResumeDistracting = false;
-						Distracting = false;
+						ResumeDistracting = Distracting = false;
 					}
 					DropPlate();
 				}
@@ -19740,13 +19726,12 @@ public class StudentScript : MonoBehaviour
 					Subtitle.UpdateLabel(SubtitleType.PetWeaponReaction, 1, 3f);
 				}
 				TargetDistance = 1f;
-				ReportingMurder = false;
-				ReportingBlood = false;
+				ReportingMurder = ReportingBlood = false;
 			}
 			Routine = false;
 			Fleeing = true;
 		}
-		else if (Persona == PersonaType.Heroic || Persona == PersonaType.Protective)
+		else if (Persona == (PersonaType.Heroic || PersonaType.Protective))
 		{
 			Debug.Log("A Heroic student is now running PersonaReaction()...");
 			Headache = false;
@@ -20375,44 +20360,20 @@ public class StudentScript : MonoBehaviour
 						Destinations[ID] = Seat;
 					}
 				}
-				else if (OriginalClub == ClubType.Gaming)
-				{
-					Destinations[ID] = StudentManager.Hangouts.List[StudentID];
-				}
-				else if (OriginalClub == ClubType.Art)
-				{
-					Destinations[ID] = StudentManager.Hangouts.List[StudentID];
-				}
-				else if (OriginalClub == ClubType.MartialArts)
+				else if (OriginalClub == (ClubType.MartialArts || ClubType.LightMusic))
 				{
 					Destinations[ID] = StudentManager.Clubs.List[StudentID];
+					
+					if (OriginalClub == ClubType.MartialArts)
+					{
 					DressCode = false;
+					}
 				}
-				else if (OriginalClub == ClubType.LightMusic)
-				{
-					Destinations[ID] = StudentManager.Clubs.List[StudentID];
-				}
-				else if (OriginalClub == ClubType.Photography)
-				{
-					Destinations[ID] = StudentManager.Hangouts.List[StudentID];
-				}
-				else if (OriginalClub == ClubType.Science)
-				{
-					Destinations[ID] = StudentManager.Hangouts.List[StudentID];
-				}
-				else if (OriginalClub == ClubType.Sports)
+				else if (OriginalClub == (ClubType.Sports || ClubType.Gardening))
 				{
 					Destinations[ID] = StudentManager.Clubs.List[StudentID].GetChild(0);
 				}
-				else if (OriginalClub == ClubType.Gardening)
-				{
-					Destinations[ID] = StudentManager.Clubs.List[StudentID].GetChild(0);
-				}
-				else if (OriginalClub == ClubType.Newspaper)
-				{
-					Destinations[ID] = StudentManager.Hangouts.List[StudentID];
-				}
-				else
+				else 		// Gaming Club, Art Club, Photography Club, Science Club, Newspaper Club, or any other club.
 				{
 					Destinations[ID] = StudentManager.Hangouts.List[StudentID];
 				}
@@ -20438,14 +20399,14 @@ public class StudentScript : MonoBehaviour
 			{
 				if (ClubGlobals.GetClubClosed(ClubType.Gaming))
 				{
-					Destinations[ID] = StudentManager.AltShockedSpots[StudentID - 80];
+					Destinations[ID] = StudentManager.AltShockedSpots[StudentID % 80];
 				}
 				else
 				{
 					Debug.Log("Student with ID# " + StudentID + " is currently trying to add a ''Shocked'' destination to their routine.");
 					if (Club == ClubType.Bully)
 					{
-						Destinations[ID] = StudentManager.ShockedSpots[StudentID - 80];
+						Destinations[ID] = StudentManager.ShockedSpots[StudentID % 80];
 					}
 					else
 					{
@@ -20455,7 +20416,7 @@ public class StudentScript : MonoBehaviour
 			}
 			else if (scheduleBlock.destination == "Miyuki")
 			{
-				ClubMemberID = StudentID - 35;
+				ClubMemberID = StudentID % 35;
 				if (ClubMemberID > 0 && ClubMemberID < 6)
 				{
 					Destinations[ID] = StudentManager.MiyukiSpots[ClubMemberID].transform;
@@ -20470,7 +20431,7 @@ public class StudentScript : MonoBehaviour
 				Destinations[ID] = StudentManager.PracticeSpots[ClubMemberID];
 				if (Club == ClubType.None && !StudentManager.Eighties && StudentID == 51)
 				{
-					Destinations[ID] = StudentManager.Hangouts.List[StudentID];
+					Destinations[ID] = StudentManager.Hangouts.List[51];
 				}
 			}
 			else if (scheduleBlock.destination == "Lyrics")
@@ -20602,8 +20563,7 @@ public class StudentScript : MonoBehaviour
 					if (StudentManager.CustomMode)
 					{
 						StudentManager.RivalGuardSpots[0].parent = StudentManager.Students[StudentManager.RivalID].transform;
-						StudentManager.RivalGuardSpots[0].transform.localPosition = new Vector3(0f, 0f, 0f);
-						StudentManager.RivalGuardSpots[0].transform.localEulerAngles = new Vector3(0f, 0f, 0f);
+						StudentManager.RivalGuardSpots[0].transform.localPosition = StudentManager.RivalGuardSpots[0].transform.localEulerAngles = new Vector3(0f, 0f, 0f);
 					}
 					Destinations[ID] = StudentManager.RivalGuardSpots[StudentID].transform;
 				}
@@ -21219,8 +21179,7 @@ public class StudentScript : MonoBehaviour
 	{
 		if (!Male)
 		{
-			MyRenderer.materials[0].mainTexture = Cosmetic.SocksTexture;
-			MyRenderer.materials[1].mainTexture = Cosmetic.SocksTexture;
+			MyRenderer.materials[0].mainTexture = MyRenderer.materials[1].mainTexture = Cosmetic.SocksTexture;
 		}
 		else
 		{
@@ -21269,8 +21228,7 @@ public class StudentScript : MonoBehaviour
 				Follower.Destinations[Follower.Phase] = StudentManager.LastKnownOsana;
 				if (Follower.CurrentDestination == Follower.FollowTarget)
 				{
-					Follower.Pathfinding.target = StudentManager.LastKnownOsana;
-					Follower.CurrentDestination = StudentManager.LastKnownOsana;
+					Follower.Pathfinding.target = Follower.CurrentDestination = StudentManager.LastKnownOsana;
 				}
 			}
 		}
@@ -21377,11 +21335,7 @@ public class StudentScript : MonoBehaviour
 				SkirtCollider.gameObject.SetActive(value: false);
 			}
 			CharacterAnimation.cullingType = AnimationCullingType.AlwaysAnimate;
-			Ragdoll.AllColliders[10].isTrigger = false;
-			NotFaceCollider.enabled = false;
-			FaceCollider.enabled = false;
-			MyController.enabled = false;
-			emission.enabled = false;
+			Ragdoll.AllColliders[10].isTrigger = NotFaceCollider.enabled = FaceCollider.enabled = emission.enabled = MyController.enabled = false;
 			SpeechLines.Stop();
 			if (MyRenderer.enabled)
 			{
@@ -21473,19 +21427,11 @@ public class StudentScript : MonoBehaviour
 			Yandere.PauseScreen.Schemes.UpdateInstructions();
 		}
 		TargetDistance = 1f;
-		FocusOnStudent = false;
-		FocusOnYandere = false;
-		BeenSplashed = true;
-		BatheFast = true;
+		FocusOnStudent = FocusOnYandere = false;
+		BeenSplashed = BatheFast = true;
 		LiquidProjector.gameObject.SetActive(value: true);
 		LiquidProjector.enabled = true;
-		Emetic = false;
-		Sedated = false;
-		Headache = false;
-		Vomiting = false;
-		DressCode = false;
-		Reacted = false;
-		Alarmed = false;
+		Emetic = Sedated = Headache = Vomiting = DressCode = Reacted = Alarmed = false;
 		if (Gas)
 		{
 			LiquidProjector.material = GasMaterial;
@@ -21536,31 +21482,23 @@ public class StudentScript : MonoBehaviour
 			SpeechLines.Stop();
 			Hearts.Stop();
 			StopMeeting();
-			Pathfinding.canSearch = false;
-			Pathfinding.canMove = false;
+			Pathfinding.canSearch = Pathfinding.canMove = false;
 			SplashTimer = 0f;
-			SplashPhase = 1;
-			BathePhase = 1;
+			SplashPhase = BathePhase = 1;
 			ForgetRadio();
 			if (Distracting)
 			{
 				DistractionTarget.TargetedForDistraction = false;
 				DistractionTarget.Octodog.SetActive(value: false);
-				DistractionTarget.Distracted = false;
-				Distracting = false;
+				DistractionTarget.Distracted = Distracting = false;
 				CanTalk = true;
 			}
 			if (Investigating)
 			{
 				Investigating = false;
 			}
-			SchoolwearUnavailable = true;
-			SentToLocker = false;
-			Distracted = true;
-			Splashed = true;
-			Routine = false;
-			GoAway = false;
-			Wet = true;
+			SchoolwearUnavailable = Distracted = Splashed = Wet = true;
+			SentToLocker = Routine = GoAway = false;
 			if (Following)
 			{
 				FollowCountdown.gameObject.SetActive(value: false);
@@ -21650,13 +21588,9 @@ public class StudentScript : MonoBehaviour
 	public void StopMeeting()
 	{
 		Prompt.Label[0].text = "     Talk";
-		Pathfinding.canSearch = true;
-		Pathfinding.canMove = true;
+		Pathfinding.canSearch = Pathfinding.canMove = CanTalk = true;
 		DistanceToDestination = 100f;
-		Drownable = false;
-		Pushable = false;
-		Meeting = false;
-		CanTalk = true;
+		Drownable = Pushable = Meeting = false;
 		StudentManager.UpdateMe(StudentID);
 		MeetTimer = 0f;
 		RemoveOfferHelpPrompt();
@@ -21671,17 +21605,19 @@ public class StudentScript : MonoBehaviour
 		OfferHelpScript offerHelpScript = null;
 		if (StudentManager.Eighties && StudentID == StudentManager.RivalID)
 		{
-			offerHelpScript = StudentManager.EightiesOfferHelp;
-			StudentManager.LoveManager.RivalWaiting = false;
-		}
-		else if (StudentID == StudentManager.RivalID)
-		{
-			offerHelpScript = StudentManager.OsanaOfferHelp;
-			StudentManager.LoveManager.RivalWaiting = false;
-		}
-		else if (StudentID == 30)
-		{
-			offerHelpScript = StudentManager.OfferHelp;
+			if (StudentManager.Eighties && StudentID == StudentManager.RivalID)
+			{
+				offerHelpScript = StudentManager.EightiesOfferHelp;
+			}
+			else if (StudentID == StudentManager.RivalID)	
+			{
+				offerHelpScript = StudentManager.OsanaOfferHelp;
+			}
+			else if (StudentID == 30)
+			{
+				offerHelpScript = StudentManager.OfferHelp;
+			}
+			
 			StudentManager.LoveManager.RivalWaiting = false;
 		}
 		else if (StudentID == 5)
@@ -21707,26 +21643,11 @@ public class StudentScript : MonoBehaviour
 		Dying = true;
 		CharacterAnimation.CrossFade(BurningAnim);
 		CharacterAnimation[WetAnim].weight = 0f;
-		Pathfinding.canSearch = false;
-		Pathfinding.canMove = false;
-		Ragdoll.BurningAnimation = true;
-		Ragdoll.Disturbing = true;
-		Ragdoll.Burning = true;
-		WitnessedCorpse = false;
-		FocusOnStudent = false;
-		FocusOnYandere = false;
-		Investigating = false;
-		EatingSnack = false;
-		DiscCheck = false;
-		WalkBack = false;
-		Alarmed = false;
-		CanTalk = false;
-		Fleeing = false;
-		Routine = false;
-		Reacted = false;
-		Burning = true;
-		Wet = false;
+		Pathfinding.canSearch = Pathfinding.canMove = WitnessedCorpsse = FocusOnStudent = FocusOnYandere = Investigating = EatingSnack = DiscCheck = WalkBack = Alarmed = CanTalk = Fleeing = Routine = Reacted = Wet = false;
+		Ragdoll.BurningAnimation = Ragdoll.Disturbing = Ragdoll.Burning = true;
+		
 		SpawnAlarmDisc();
+		
 		if (!NoScream)
 		{
 			SpawnTimeRespectingAudioSource(BurningClip);
@@ -21764,19 +21685,7 @@ public class StudentScript : MonoBehaviour
 			SpawnAlarmDisc();
 			CharacterAnimation.CrossFade(JojoReactAnim);
 			CharacterAnimation[WetAnim].weight = 0f;
-			Pathfinding.canSearch = false;
-			Pathfinding.canMove = false;
-			WitnessedCorpse = false;
-			Investigating = false;
-			EatingSnack = false;
-			DiscCheck = false;
-			WalkBack = false;
-			Alarmed = false;
-			CanTalk = false;
-			Fleeing = false;
-			Routine = false;
-			Reacted = false;
-			Wet = false;
+			Pathfinding.canSearch = Pathfinding.canMove = WitnessedCorpse = Investigating = EatingSnack = DiscCheck = WalkBack = Alarmed = CanTalk = Fleeing = Routine = Reacted = Wet = false;
 			GetComponent<AudioSource>().Play();
 			if (Following)
 			{
@@ -23420,8 +23329,7 @@ public class StudentScript : MonoBehaviour
 		UnityEngine.Object.Destroy(DetectionMarker.gameObject);
 		AudioSource.PlayClipAtPoint(Yandere.Petrify, base.transform.position + new Vector3(0f, 1f, 0f));
 		UnityEngine.Object.Instantiate(Yandere.Pebbles, Hips.position, Quaternion.identity);
-		Pathfinding.enabled = false;
-		ShoeRemoval.enabled = false;
+		Pathfinding.enabled = ShoeRemoval.enabled = false;
 		CharacterAnimation.Stop();
 		Prompt.enabled = false;
 		SpeechLines.Stop();
@@ -23484,12 +23392,10 @@ public class StudentScript : MonoBehaviour
 		Debug.Log(Name + " just fired the EndAlarm() function.");
 		if (ReturnToRoutineAfter)
 		{
-			CurrentDestination = Destinations[Phase];
-			Pathfinding.target = Destinations[Phase];
+			CurrentDestination = Pathfinding.target = Destinations[Phase];
 			ReturnToRoutineAfter = false;
 		}
-		Pathfinding.canSearch = true;
-		Pathfinding.canMove = true;
+		Pathfinding.canSearch = Pathfinding.canMove = true;
 		if (TurnOffRadio)
 		{
 			RadioTimer = 3f;
@@ -23506,13 +23412,8 @@ public class StudentScript : MonoBehaviour
 		{
 			SmartPhone.SetActive(value: true);
 		}
-		FocusOnStudent = false;
-		FocusOnYandere = false;
-		DiscCheck = false;
-		Alarmed = false;
-		Reacted = false;
-		Hesitation = 0f;
-		AlarmTimer = 0f;
+		FocusOnStudent = FocusOnYandere = DiscCheck = Alarmed = Reacted = false;
+		Hesitation = AlarmTimer = 0f;
 		if (WitnessedCorpse)
 		{
 			PersonaReaction();
